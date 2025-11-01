@@ -235,6 +235,66 @@
             color: #888;
             font-size: 14px;
         }
+
+        /* Video grid for Music tab */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .video-item {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(216,27,96,0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .video-item:hover {
+            transform: translateY(-4px);
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 aspect ratio */
+            background: #000;
+        }
+
+        .video-wrapper iframe,
+        .video-wrapper .video-thumb {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-meta {
+            padding: 10px 12px;
+            color: #8a1c4a;
+        }
+
+        .video-thumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+        }
+
+        .play-button {
+            background: rgba(216,27,96,0.9);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 6px 18px rgba(216,27,96,0.2);
+        }
         
         /* Notes Tab */
         .note {
@@ -390,19 +450,11 @@
             <!-- Music Tab -->
             <div class="tab-content" id="music">
                 <h2>Songs that remind me of you</h2>
-                <div class="song">
-                    <div class="song-icon">🎵</div>
-                    <div class="song-info">
-                        <h4>Hiwaga</h4>
-                        <p>by Tatin DC</p>
-                    </div>
-                </div>
-                <div class="song">
-                    <div class="song-icon">🎵</div>
-                    <div class="song-info">
-                        <h4>Wish</h4>
-                        <p>by 16</p>
-                    </div>
+                <!-- <p style="color:#8a1c4a;">Tap a thumbnail to load the song (lazy-loaded to save bandwidth).</p> -->
+
+                <!-- Video grid will be injected here -->
+                <div class="video-grid" id="videoGrid">
+                    <!-- JS populates this with .video-item elements. Replace videoId values in the script below to change videos. -->
                 </div>
             </div>
             
@@ -549,6 +601,65 @@
             
             addFloatingElements();
         });
+
+        // Music tab: data-driven YouTube embeds with lazy loading
+        (function() {
+            // Songs array: set `videoId` to the YouTube ID for each song.
+            const songs = [
+                { title: 'Favorite song', artist: 'Bensoul', videoId: 'KshwmLIaA6w' },
+                { title: 'Aki Sioni', artist: 'Njerae', videoId: 'yOLhOM_L0bA' }
+            ];
+
+            const videoGrid = document.getElementById('videoGrid');
+            if (!videoGrid) return;
+
+            songs.forEach(song => {
+                const item = document.createElement('div');
+                item.className = 'video-item';
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'video-wrapper';
+
+                const thumb = document.createElement('div');
+                thumb.className = 'video-thumb';
+                // Use YouTube's thumbnail URL pattern; will work after replacing videoId
+                thumb.style.backgroundImage = `url('https://img.youtube.com/vi/${song.videoId}/hqdefault.jpg')`;
+
+                const play = document.createElement('div');
+                play.className = 'play-button';
+                play.innerText = 'Play ▶';
+
+                // Overlay play button
+                thumb.appendChild(play);
+                wrapper.appendChild(thumb);
+
+                const meta = document.createElement('div');
+                meta.className = 'video-meta';
+                meta.innerHTML = `<strong>${song.title}</strong><div style="font-size:13px;color:#a33;">by ${song.artist}</div>`;
+
+                item.appendChild(wrapper);
+                item.appendChild(meta);
+                videoGrid.appendChild(item);
+
+                // Click to lazy-load iframe
+                thumb.addEventListener('click', function() {
+                    if (!song.videoId || song.videoId.startsWith('REPLACE_WITH')) {
+                        // If videoId placeholder remains, don't attempt to load
+                        alert('Video ID not set. Replace the placeholder in the script with a real YouTube ID.');
+                        return;
+                    }
+
+                    const iframe = document.createElement('iframe');
+                    iframe.src = `https://www.youtube.com/embed/${song.videoId}?rel=0&autoplay=1`;
+                    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+                    iframe.setAttribute('allowfullscreen', '');
+
+                    // Replace thumbnail with iframe
+                    wrapper.innerHTML = '';
+                    wrapper.appendChild(iframe);
+                });
+            });
+        })();
     </script>
 </body>
 </html>
