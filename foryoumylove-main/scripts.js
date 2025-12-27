@@ -106,7 +106,7 @@ function setupPasswordGate() {
     }
 
     function checkPassword() {
-        if (passwordInput.value.trim().toLowerCase() === 'shorty') {
+        if (passwordInput.value.trim().toLowerCase() === 'kipenzii') {
             unlock();
         } else {
             passwordInput.value = '';
