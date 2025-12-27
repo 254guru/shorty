@@ -1,0 +1,16 @@
+{
+  "name": "foryoumylove-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Express server for foryoumylove with CSP headers and Spotify token proxy",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "node-fetch": "^3.3.2",
+    "cookie-parser": "^1.4.6"
+  }
+}
